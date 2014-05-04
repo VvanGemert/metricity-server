@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'metricity_server'
+MetricityServer.start

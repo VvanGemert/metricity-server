@@ -1,4 +1,14 @@
 #!/usr/bin/env ruby
+$LOAD_PATH << File.expand_path(File.join(File.dirname(__FILE__), '..','lib'))
 
-require 'metricity_server'
-MetricityServer.start
+require 'metricity-server'
+require 'eventmachine'
+
+UDP_HOST = '127.0.0.1'
+UDP_PORT = 9700
+
+Process.daemon
+
+EM.run {  EM.open_datagram_socket UDP_HOST, UDP_PORT, Metricity::Server::Receiver }
+
+# Metricity::Server.start

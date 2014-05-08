@@ -1,11 +1,10 @@
 require 'socket'
-require 'eventmachine'
 
 module Metricity
   module Server
     class Receiver < EventMachine::Connection
       def initialize
-        puts "Starting Metricity daemon..."
+        puts 'TESTING'
       end
       
       def receive_data(json)

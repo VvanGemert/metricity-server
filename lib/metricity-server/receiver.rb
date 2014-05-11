@@ -1,4 +1,7 @@
 require 'socket'
+require 'json'
+require 'mongo'
+require 'eventmachine'
 
 module Metricity
   module Server

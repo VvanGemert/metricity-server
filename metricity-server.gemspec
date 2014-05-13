@@ -22,6 +22,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency "json"
   gem.add_dependency "mongo"
   gem.add_dependency "bson_ext"
+  gem.add_dependency "sinatra"
+  gem.add_dependency "thin"
   
   gem.add_development_dependency "bundler", "~> 1.6"
   gem.add_development_dependency "rake"

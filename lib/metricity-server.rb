@@ -1,5 +1,6 @@
 require "metricity-server/version"
 require "metricity-server/receiver"
+require "metricity-server/dashboard"
 require 'mongo'
 
 module Metricity
@@ -8,6 +9,7 @@ module Metricity
 
     def self.start!(path)
       EM.open_datagram_socket '127.0.0.1', 9888, Receiver
+      Webserver.run!
     end
     
     def self.tester

@@ -1,1 +1,1 @@
-require 'metricity'
+require 'metricity-server'

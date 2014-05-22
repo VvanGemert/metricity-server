@@ -1,5 +1,53 @@
-script src="//cdnjs.cloudflare.com/ajax/libs/highcharts/4.0.1/highcharts-all.js" type="text/javascript"
+script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js" type="text/javascript"
+script src="http://code.highcharts.com/highcharts.js" type="text/javascript"
+script src="http://code.highcharts.com/highcharts-more.js" type="text/javascript"
+script src="http://code.highcharts.com/modules/exporting.js" type="text/javascript"
 script src="/js/application.js" type="text/javascript"
 
 h1= "Testing"
-== high_chart("test", @chart)
+#area
+
+javascript:
+  $(function () {
+        $.getJSON('/data.json', function(data) {
+    
+        	$('#area').highcharts({
+        	  
+    		    chart: {
+    		        type: 'area',
+    		        zoomType: 'x'
+    		    },
+    		    
+    		    title: {
+    		        text: 'Memory Usage'
+    		    },
+    		
+    		    xAxis: {
+    		        type: 'datetime'
+    		    },
+    		    
+    		    yAxis: {
+    		        title: {
+    		            text: null
+    		        }
+    		    },
+            plotOptions: {
+                area: {
+                    stacking: 'normal',
+                    lineColor: '#666666',
+                    lineWidth: 0,
+                    marker: {
+                        enabled: false
+                    }
+                }
+            },
+
+    		    
+    		    legend: {
+    		        enabled: false
+    		    },
+    		
+    		    series: data	
+    		});
+      });
+    });

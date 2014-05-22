@@ -7,7 +7,7 @@ module Metricity
   module Server
     class Receiver < EventMachine::Connection
       def initialize
-        puts 'TESTING'
+        puts 'UDP Receiver started..'
       end
       
       def receive_data(json)

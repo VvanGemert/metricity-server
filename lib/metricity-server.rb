@@ -8,6 +8,14 @@ module Metricity
     include Mongo
 
     def self.start!(path)
+      puts "Starting Metricity-Server.."
+      begin
+        puts "Connecting to MongoDB.."
+        @mongo_client = MongoClient.new
+      rescue Mongo::ConnectionFailure
+        puts "Could not connect to MongoDB, is it running?"
+        exit
+      end
       EM.open_datagram_socket '127.0.0.1', 9888, Receiver
       Webserver.run!
     end

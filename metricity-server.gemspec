@@ -23,6 +23,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'mongo'
   gem.add_dependency 'bson_ext'
   gem.add_dependency 'sinatra'
+  gem.add_dependency 'tilt', '~> 1.4.1'
   gem.add_dependency 'slim'
   gem.add_dependency 'sass'
   gem.add_dependency 'coffee-script'

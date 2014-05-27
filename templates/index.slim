@@ -9,7 +9,7 @@ h1= "Testing"
 
 javascript:
   $(function () {
-        $.getJSON('/data.json', function(data) {
+        $.getJSON('/data2.json', function(data) {
     
         	$('#area').highcharts({
         	  
@@ -23,12 +23,13 @@ javascript:
     		    },
     		
     		    xAxis: {
-    		        type: 'datetime'
+    		        type: 'datetime',
+    		        minRange: 1 * 24 * 3600000
     		    },
     		    
     		    yAxis: {
     		        title: {
-    		            text: null
+    		            text: 'Memory in MB'
     		        }
     		    },
             plotOptions: {
@@ -44,7 +45,7 @@ javascript:
 
     		    
     		    legend: {
-    		        enabled: false
+    		        enabled: true
     		    },
     		
     		    series: data	

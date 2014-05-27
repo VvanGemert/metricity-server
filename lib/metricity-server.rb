@@ -11,7 +11,7 @@ module Metricity
       puts "Starting Metricity-Server.."
       begin
         puts "Connecting to MongoDB.."
-        @mongo_client = MongoClient.new
+        check_indexes(MongoClient.new)
       rescue Mongo::ConnectionFailure
         puts "Could not connect to MongoDB, is it running?"
         exit
@@ -19,16 +19,24 @@ module Metricity
       EM.open_datagram_socket '127.0.0.1', 9888, Receiver
       Webserver.run!
     end
+    
+    def self.check_indexes(client)
+      db = client['metricity']
+      coll = db['metrics']
+      unless db.index_information('metrics')['timestamp_hourly_index']
+        puts "Index created for metrics on timestamp_hourly."
+        coll.create_index('timestamp_hourly', name: 'timestamp_hourly_index')
+      end
+    end
 
     def self.tester
-
       client = MongoClient.new
       db = client['metricity']
       @coll = db['metrics']
 
       start = Time.now
 
-      1.times do 
+      700.times do 
         insert_metric({
           time: time_rand(Time.local(Time.now.year )),
           type: 'memory_usage',
@@ -45,14 +53,14 @@ module Metricity
       tt = Time.local(Time.now.year)
       td = Time.local(Time.now.year + 1)
 
-      p @coll.find({ 'timestamp_hourly' => { '$gte' => tt, '$lt' => td } }).sort('timestamp_hourly').each { |r| p r['timestamp_hourly'].to_s + " :: " + r['objects']['rails']['num_samples'].to_s + " :: " + r['objects']['rails']['total_samples'].to_s  } #['timestamp_hourly'] }
+      # p @coll.find({ 'timestamp_hourly' => { '$gte' => tt, '$lt' => td } }).sort('timestamp_hourly').each { |r| p r['timestamp_hourly'].to_s + " :: " + r['objects']['rails']['num_samples'].to_s + " :: " + r['objects']['rails']['total_samples'].to_s  } #['timestamp_hourly'] }
 
       ending = Time.now
 
       p 'Total time: ' + (ending - start).to_s
       # @coll.remove
 
-      exit
+      # exit
 
       # time = Time.new(Time.now.year, Time.now.month, Time.now.day, Time.now.hour)
       # 
@@ -117,13 +125,8 @@ module Metricity
           inc['objects.' + obj.first.to_s + '.total_samples'] = obj[1]
         end
 
-        @coll.update(
-          { timestamp_hourly: time, type: 'memory_usage' },
-          {
-            '$set' => set,
-            '$inc' => inc
-          }
-        )
+        @coll.update({ timestamp_hourly: time, type: 'memory_usage' },
+                     { '$set' => set, '$inc' => inc })
       else
         objects = {}
         object[:objects].each do |obj|
@@ -140,8 +143,6 @@ module Metricity
           type: object[:type],
           objects: objects)
       end
-      # item = @coll.find_one({ type: 'memory_usage', timestamp_hourly: time })
-      # p item
     end
 
     def self.time_rand(from = 0.0, to = Time.now)

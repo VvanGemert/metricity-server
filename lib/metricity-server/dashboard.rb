@@ -1,4 +1,4 @@
-require 'sinatra/base'
+require 'sinatra'
 require 'mongo'
 require 'slim'
 require 'sass'
@@ -34,9 +34,45 @@ module Metricity
       set :public_folder, Dir.pwd + '/public'
       set :views, Dir.pwd + '/templates'
 
+      get '/data2.json' do
+        tt = Time.local(Time.now.year, Time.now.month-1, Time.now.day)
+        td = Time.local(Time.now.year, Time.now.month, Time.now.day)
+        
+        client = MongoClient.new
+        db = client['metricity']
+        @coll = db['metrics']
+        
+        @type = 'memory_usage'
+        @data = @coll.find({ 'type' => @type,
+                            'timestamp_hourly' => { '$gte' => tt, '$lt' => td } }).sort('timestamp_hourly')
+        
+        tmp_data = {}
+        @data.each do |row|
+          stamp = row['timestamp_hourly']
+          
+          row['objects'].each do |series|
+            tmp_data[series[0]] = [] unless tmp_data[series[0]]
+            val = (series[1]["total_samples"] / series[1]["num_samples"]).to_i
+            time = (Time.local(stamp.year, stamp.month, stamp.day, stamp.hour).to_i.to_s + "000").to_i
+            tmp_data[series[0]].push([time, val])
+          end
+        end
+        
+        dataa = []
+        tmp_data.each do |key, val|
+          dataa.push({
+            name: key,
+            data: val
+          })
+        end
+        
+        content_type :json
+        dataa.to_json        
+      end
+
       get '/data.json' do
-        tt = Time.local(Time.now.year, Time.now.month, Time.now.day - 5)
-        td = Time.local(Time.now.year, Time.now.month, Time.now.day + 1)
+        tt = Time.local(Time.now.year, Time.now.month, Time.now.day - 20)
+        td = Time.local(Time.now.year, Time.now.month, Time.now.day)
         
         client = MongoClient.new
         db = client['metricity']
@@ -56,7 +92,7 @@ module Metricity
             min = series[1]['values'].first[0]
             sec = series[1]['values'].first[1].first[0]
             val = series[1]['values'].first[1].first[1]
-            time = Time.local(stamp.year, stamp.month, stamp.day, stamp.hour, min, sec).to_i
+            time = (Time.local(stamp.year, stamp.month, stamp.day, stamp.hour, min, sec).to_i.to_s + "000").to_i
             tmp_data[series[0]].push([time, val])
           end
         end
@@ -109,17 +145,18 @@ module Metricity
       end
 
       get '/' do
-        tt = Time.local(Time.now.year, Time.now.month, Time.now.day - 5)
-        td = Time.local(Time.now.year, Time.now.month, Time.now.day + 1)
-        
-        client = MongoClient.new
-        db = client['metricity']
-        @coll = db['metrics']
-        
-        @type = 'memory_usage'
-        @data = @coll.find({ 'type' => @type,
-                            'timestamp_hourly' => { '$gte' => tt, '$lt' => td } }).sort('timestamp_hourly')
-        
+        slim :index
+        # tt = Time.local(Time.now.year, Time.now.month, Time.now.day - 5)
+        # td = Time.local(Time.now.year, Time.now.month, Time.now.day + 1)
+        # 
+        # client = MongoClient.new
+        # db = client['metricity']
+        # @coll = db['metrics']
+        # 
+        # @type = 'memory_usage'
+        # @data = @coll.find({ 'type' => @type,
+        #                     'timestamp_hourly' => { '$gte' => tt, '$lt' => td } }).sort('timestamp_hourly')
+        # 
         # hours = []
         # values_rails = []
         # values_delayed_job = []
@@ -143,7 +180,7 @@ module Metricity
         #   f.legend(:align => 'right', :verticalAlign => 'top', :y => 75, :x => -50, :layout => 'vertical')
         #   f.chart({:defaultSeriesType => "spline"})
         # end
-        slim :index
+        
       end
     end
   end

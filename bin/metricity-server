@@ -6,6 +6,17 @@ require 'metricity-server'
 
 @pid_full = '/tmp/metricity_server.pid'
 
+
+def start_app(args)
+  if args.empty?
+    puts 'Metricity Help'
+  else
+    if [:start, :run, :stop].include? args.first.to_sym
+      send(args.first.to_sym)
+    end
+  end
+end
+
 def run
 	EM.run{
 	 	Signal.trap('INT') { stop }
@@ -59,9 +70,8 @@ def stop
 		File.delete(@pid_full)
 		puts 'Stopped'
 	else
-		warn 'Daemon is not running'
-		exit -1
+		warn 'Shutting down..'
 	end
 end
 
-run
+start_app(ARGV)

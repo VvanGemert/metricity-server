@@ -33,7 +33,13 @@ module Metricity
 
       set :public_folder, Dir.pwd + '/public'
       set :views, Dir.pwd + '/templates'
-
+      
+      settings.logging = true
+      
+      configure do
+        set :threaded, true
+      end
+  
       get '/data2.json' do
         tt = Time.local(Time.now.year, Time.now.month-1, Time.now.day)
         td = Time.local(Time.now.year, Time.now.month, Time.now.day)

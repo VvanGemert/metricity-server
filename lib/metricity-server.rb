@@ -16,8 +16,8 @@ module Metricity
         puts "Could not connect to MongoDB, is it running?"
         exit
       end
-      EM.open_datagram_socket '127.0.0.1', 9888, Receiver
-      Webserver.run!
+      #EM.open_datagram_socket '127.0.0.1', 9888, Receiver
+      #Webserver.run!
     end
     
     def self.check_indexes(client)

@@ -1,10 +1,11 @@
 #!/usr/bin/env ruby
 $LOAD_PATH << File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'eventmachine'
+require 'rubygems'
 require 'metricity-server'
+require 'thin'
 
-@pid_full = '/tmp/metricity_server.pid'
+@pid_file = 'tmp/thin.pid'
 
 
 def start_app(args)
@@ -18,19 +19,55 @@ def start_app(args)
 end
 
 def run
-	EM.run{
-	 	Signal.trap('INT') { stop }
-	 	Signal.trap('TERM'){ stop }
-	 	Metricity::Server.start!( ARGV.first || 'start' )
-	}
+
+  server = Thin::Server.new('0.0.0.0', 4567) do
+    EM.next_tick {
+      Signal.trap('QUIT') { EM.stop }
+      EM.open_datagram_socket '127.0.0.1', 9888, Metricity::Server::Receiver
+      # EventMachine::add_periodic_timer(1) { puts "." }
+    }
+    map '/' do
+      run Metricity::Server::Webserver
+    end
+  end
+
+ # p @pid_file
+  #server.pid_file = @pid_file
+  server.log_file = 'tmp/thin.log'
+  server.pid_file = 'tmp/thin.pid'
+ #server.silent
+  server.start
+
+#  dispatch = Rack::Builder.app do
+#    Signal.trap('INT') { stop }
+#    Signal.trap('TERM'){ stop }
+#    EM.next_tick {
+#      @pid_full = '/tmp/metricity_server.pid'
+#      Signal.trap('INT') { EM.stop }
+#      Signal.trap('TERM'){ EM.stop }
+#      EM.open_datagram_socket '127.0.0.1', 9888, Metricity::Server::Receiver
+#      EventMachine::add_periodic_timer(1) { puts "." }
+#    }
+#    map '/' do
+#      run Metricity::Server::Webserver
+#    end
+#  end
+#  
+#  Rack::Server.start({
+#    app:    dispatch,
+#    server: 'thin',
+#    Host:   '127.0.0.1',
+#    Port:   '4567',
+#    pid:    @pid_full,
+#    daemonize: false
+#  })
 end
 
 def get_pid
-	if File.exists?(@pid_full)
-		file = File.new(@pid_full, "r")
+	if File.exists?(@pid_file)
+		file = File.new(@pid_file, "r")
 		pid = file.read
 		file.close
-
 		pid
 	else
 		0
@@ -38,36 +75,33 @@ def get_pid
 end
 
 def start
-	pid = get_pid
-	if pid != 0
-		warn 'Daemon is already running'
-		exit -1
-	end
+   # run
+  #	pid = get_pid
+  #	if pid != 0
+  #		warn 'Daemon is already running'
+  #		exit -1
+  #	end
+  #	
+  
+  pid = fork { run }
 
-	pid = fork {
-		run
-	}
-	begin
-		file = File.new(@pid_full, "w")
-		file.write(pid)
-		file.close
-		Process.detach(pid)
-	rescue => exc
-		Process.kill('TERM', pid)
-		warn "Cannot start daemon: #{exc.message}"
-	end
+  begin
+  	file = File.new(@pid_file, "w")
+    file.write(pid)
+    file.close
+    Process.detach(pid)
+  rescue => exc
+    Process.kill('TERM', pid)
+  	warn "Cannot start daemon: #{exc.message}"
+  end
 end
 
 def stop
 	pid = get_pid
-	begin
-		EM.stop
-	rescue
-	end
-
 	if pid != 0
-		Process.kill('HUP', pid.to_i)
-		File.delete(@pid_full)
+	  # Gracefully shutdown
+		Process.kill('QUIT', pid.to_i)
+		File.delete(@pid_file)
 		puts 'Stopped'
 	else
 		warn 'Shutting down..'

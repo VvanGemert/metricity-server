@@ -27,6 +27,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'slim'
   gem.add_dependency 'sass'
   gem.add_dependency 'coffee-script'
+  gem.add_dependency 'thin'
 
   gem.add_development_dependency 'bundler', '~> 1.6'
   gem.add_development_dependency 'rake'

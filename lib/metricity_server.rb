@@ -1,4 +1,5 @@
 require 'metricity-server/version'
+require 'metricity-server/daemon'
 require 'metricity-server/receiver'
 require 'metricity-server/dashboard'
 require 'mongo'

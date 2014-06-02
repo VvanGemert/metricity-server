@@ -41,7 +41,7 @@ module Metricity
           File.delete(PID_FILE)
           puts ':: Stopping Metricity Server'
         else
-          warn 'No Daemon was running'
+          puts 'No Daemon was running'
         end
       end
 
@@ -78,14 +78,13 @@ module Metricity
 
       # Load PID
       def self.load_pid
+        pid = 0
         if File.exist?(PID_FILE)
           file = File.new(PID_FILE, 'r')
           pid = file.read
           file.close
-          pid
-        else
-          0
         end
+        pid
       end
 
       # Check PID

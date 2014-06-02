@@ -1,9 +1,7 @@
 require 'sinatra'
-require 'mongo'
 require 'slim'
 require 'sass'
 require 'coffee-script'
-require 'time'
 
 module Metricity
   module Server

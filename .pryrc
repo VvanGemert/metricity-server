@@ -1,5 +1,5 @@
 # .pryrc
-require 'metricity-server'
+require 'metricity_server'
 
 Pry.config.commands.import(Pry::CommandSet.new do
 

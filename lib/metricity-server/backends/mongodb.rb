@@ -26,32 +26,22 @@ module Metricity
           end
         end
 
-        def retrieve(type = 'memory_usage',
-                     time_from = Time.now,
-                     time_to = Time.now)
-
-          tt = Time.local(time_from.year, time_from.month,
-                          time_from.day, time_from.hour - 12)
-          td = Time.local(time_to.year, time_to.month,
-                          time_to.day, time_from.hour)
-
+        def retrieve(type, time_from, time_to, range = 'minutes')
           data = @coll.find('type' => type,
                             'timestamp_hourly' =>
-                            { '$gte' => tt, '$lt' => td })
+                            { '$gte' => time_from, '$lt' => time_to })
                        .sort('timestamp_hourly')
 
-          tmp_data = convert_series(data)
-
-          dataa = []
-          tmp_data.each do |key, val|
-            dataa.push(name: key, data: val)
+          results = []
+          convert_series(data, range).each do |key, val|
+            results.push(name: key, data: val)
           end
-          dataa
+          results
         end
 
         private
 
-        def convert_series(data, range = 'minutes')
+        def convert_series(data, range)
           tmp_data = {}
           data.each do |row|
             stamp = row['timestamp_hourly']

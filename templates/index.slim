@@ -7,6 +7,8 @@ script src="/js/application.js" type="text/javascript"
 h1= "Testing"
 #area
 
+#area2
+
 javascript:
   $(function () {
         $.getJSON('/data2.json', function(data) {
@@ -24,7 +26,7 @@ javascript:
     		
     		    xAxis: {
     		        type: 'datetime',
-    		        minRange: 1 * 24 * 3600000
+    		        minRange: 1 * 24 * 360000
     		    },
     		    
     		    yAxis: {
@@ -51,4 +53,48 @@ javascript:
     		    series: data	
     		});
       });
+      
+      $.getJSON('/data.json', function(data) {
+    
+        	$('#area2').highcharts({
+        	  
+    		    chart: {
+    		        type: 'area',
+    		        zoomType: 'x'
+    		    },
+    		    
+    		    title: {
+    		        text: 'CPU Usage'
+    		    },
+    		
+    		    xAxis: {
+    		        type: 'datetime',
+    		        minRange: 1 * 24 * 36000
+    		    },
+    		    
+    		    yAxis: {
+    		        title: {
+    		            text: 'CPU in %'
+    		        }
+    		    },
+            plotOptions: {
+                area: {
+                    stacking: 'normal',
+                    lineColor: '#666666',
+                    lineWidth: 0,
+                    marker: {
+                        enabled: false
+                    }
+                }
+            },
+
+    		    
+    		    legend: {
+    		        enabled: true
+    		    },
+    		
+    		    series: data	
+    		});
+      });
+
     });

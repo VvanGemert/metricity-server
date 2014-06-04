@@ -38,15 +38,19 @@ module Metricity
       end
 
       get '/data2.json' do
-        backend = Metricity::Server::Backends::Mongodb.new
+        metric = Metric.new
         content_type :json
-        backend.retrieve.to_json
+        metric.retrieve('memory_usage',
+                        Time.new(Time.now.year, Time.now.month - 1),
+                        Time.now, 'hours').to_json
       end
 
       get '/data.json' do
-        backend = Metricity::Server::Backends::Mongodb.new
+        metric = Metric.new
         content_type :json
-        backend.retrieve.to_json
+        metric.retrieve('cpu_usage',
+                        Time.new(Time.now.year, Time.now.month, Time.now.day),
+                        Time.now, 'seconds').to_json
       end
 
       get '/' do

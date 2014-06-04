@@ -1,9 +1,9 @@
 require 'metricity-server/version'
 require 'metricity-server/log'
 require 'metricity-server/daemon'
+require 'metricity-server/metric'
 require 'metricity-server/receiver'
 require 'metricity-server/dashboard'
-require 'mongo'
 
 module Metricity
   # Server
@@ -11,20 +11,18 @@ module Metricity
     include Mongo
 
     def self.tester
-      backend = Metricity::Server::Backends::Mongodb.new
+      metric = Metric.new
       start = Time.now
-      700.times do
-        backend.insert(
+      10.times do
+        metric.insert(
           time: time_rand(Time.local(Time.now.year, Time.new.month)),
-          type: 'memory_usage',
-          objects: { 'rails' => rand(800), 'delayed_job' => rand(200) }
+          type: 'cpu_usage',
+          objects: { 'rails' => rand(100), 'delayed_job' => rand(100) }
         )
       end
       ending = Time.now
       p 'Total time: ' + (ending - start).to_s
       start = Time.now
-
-      p backend.retrieve
       p 'Total time: ' + (Time.now - start).to_s
     end
 

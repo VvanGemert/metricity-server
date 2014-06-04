@@ -30,8 +30,10 @@ module Metricity
                      time_from = Time.now,
                      time_to = Time.now)
 
-          tt = Time.local(time_from.year, time_from.month - 1, time_from.day)
-          td = Time.local(time_to.year, time_to.month, time_to.day)
+          tt = Time.local(time_from.year, time_from.month,
+                          time_from.day, time_from.hour - 12)
+          td = Time.local(time_to.year, time_to.month,
+                          time_to.day, time_from.hour)
 
           data = @coll.find('type' => type,
                             'timestamp_hourly' =>
@@ -49,19 +51,41 @@ module Metricity
 
         private
 
-        def convert_series(data)
+        def convert_series(data, range = 'minutes')
           tmp_data = {}
           data.each do |row|
             stamp = row['timestamp_hourly']
             row['objects'].each do |series|
               tmp_data[series[0]] = [] unless tmp_data[series[0]]
-              val = (series[1]['total_samples'] /
-                     series[1]['num_samples']).to_i
-              time = (convert_time(stamp).to_i.to_s + '000').to_i
-              tmp_data[series[0]].push([time, val])
+              if %w(minutes seconds).include?(range)
+                tmp_data[series[0]].push(*convert_all(stamp, series))
+              else
+                tmp_data[series[0]].push(convert_samples(stamp, series))
+              end
             end
           end
           tmp_data
+        end
+
+        def convert_samples(stamp, series)
+          val = (series[1]['total_samples'] /
+                 series[1]['num_samples']).to_i
+          time = (convert_time(stamp).to_i.to_s + '000').to_i
+          [time, val]
+        end
+
+        def convert_all(stamp, series)
+          tmp_values = []
+          series[1]['values'].each do |minutes, seconds|
+            seconds.each do |second, val|
+              time = Time.new(stamp.year, stamp.month,
+                              stamp.day, stamp.hour,
+                              minutes.to_i, second.to_i)
+              time = (time.to_i.to_s + '000').to_i
+              tmp_values.push([time, val])
+            end
+          end
+          tmp_values
         end
 
         def update_object(object)

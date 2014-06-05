@@ -8,12 +8,12 @@ module Metricity
     # Receiver
     class Receiver < EventMachine::Connection
       def initialize
-        Metricity::Server::Backends::Mongodb.new
+        @metric = Metric.new
       end
 
       def receive_data(json)
         data = JSON.parse(json)
-        p data
+        @metric.insert(data)
       end
     end
   end

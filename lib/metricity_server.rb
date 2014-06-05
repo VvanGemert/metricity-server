@@ -15,7 +15,7 @@ module Metricity
       start = Time.now
       10.times do
         metric.insert(
-          time: time_rand(Time.local(Time.now.year, Time.new.month)),
+          time: time_rand(Time.local(Time.now.year, Time.new.month)).to_s,
           type: 'cpu_usage',
           objects: { 'rails' => rand(100), 'delayed_job' => rand(100) }
         )

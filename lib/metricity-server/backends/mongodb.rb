@@ -14,14 +14,14 @@ module Metricity
         end
 
         def insert(object)
-          time = convert_time(object[:time])
+          time = convert_time(object['time'])
           item = @coll.find_one(type: 'memory_usage', timestamp_hourly: time)
 
           if item
             @coll.update({ timestamp_hourly: time, type: 'memory_usage' },
                          update_object(object))
           else
-            @coll.insert(timestamp_hourly: time, type: object[:type],
+            @coll.insert(timestamp_hourly: time, type: object['type'],
                          objects: insert_object(object))
           end
         end
@@ -81,9 +81,9 @@ module Metricity
         def update_object(object)
           set = {}
           inc = {}
-          object[:objects].each do |obj|
+          object['objects'].each do |obj|
             set['objects.' + obj.first.to_s + '.values.' +
-              object[:time].min.to_s + '.' + object[:time].sec.to_s] = obj[1]
+              object['time'].min.to_s + '.' + object['time'].sec.to_s] = obj[1]
             inc['objects.' + obj.first.to_s + '.num_samples'] = 1
             inc['objects.' + obj.first.to_s + '.total_samples'] = obj[1]
           end
@@ -92,12 +92,12 @@ module Metricity
 
         def insert_object(object)
           objects = {}
-          object[:objects].each do |obj|
+          object['objects'].each do |obj|
             objects = objects.merge(
               obj.first.to_s => {
                 num_samples: 1, total_samples: obj[1],
-                values: { object[:time].min.to_s => {
-                  object[:time].sec.to_s => obj[1] } }
+                values: { object['time'].min.to_s => {
+                  object['time'].sec.to_s => obj[1] } }
               })
           end
           objects

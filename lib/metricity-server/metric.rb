@@ -14,7 +14,7 @@ module Metricity
       end
 
       def retrieve(type, time_from, time_to, range = 'minutes')
-        @backend.retrieve(type, time_from.utc, time_to.utc, range)
+        @backend.retrieve(type, time_from, time_to, range)
       end
 
       private

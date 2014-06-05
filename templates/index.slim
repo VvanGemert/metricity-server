@@ -11,10 +11,18 @@ h1= "Testing"
 
 javascript:
   $(function () {
+        var date = new Date();
+        var timeZoneOffset = date.getTimezoneOffset();
+        
+        Highcharts.setOptions({
+          global: {
+            timezoneOffset: timeZoneOffset
+          }
+        });
+    
         $.getJSON('/data2.json', function(data) {
     
         	$('#area').highcharts({
-        	  
     		    chart: {
     		        type: 'area',
     		        zoomType: 'x'

@@ -29,7 +29,7 @@ module Metricity
         def retrieve(type, time_from, time_to, range = 'minutes')
           data = @coll.find('type' => type,
                             'timestamp_hourly' =>
-                            { '$gte' => time_from, '$lt' => time_to })
+                            { '$gte' => time_from, '$lte' => time_to })
                        .sort('timestamp_hourly')
 
           results = []
@@ -68,9 +68,7 @@ module Metricity
           tmp_values = []
           series[1]['values'].each do |minutes, seconds|
             seconds.each do |second, val|
-              time = Time.new(stamp.year, stamp.month,
-                              stamp.day, stamp.hour,
-                              minutes.to_i, second.to_i)
+              time = convert_time(stamp, minutes.to_i, second.to_i)
               time = (time.to_i.to_s + '000').to_i
               tmp_values.push([time, val])
             end
@@ -103,11 +101,13 @@ module Metricity
           objects
         end
 
-        def convert_time(time)
-          Time.new(time.year,
+        def convert_time(time, minutes = 0, seconds = 0)
+          Time.utc(time.year,
                    time.month,
                    time.day,
-                   time.hour)
+                   time.hour,
+                   minutes,
+                   seconds)
         end
 
         def setup_connection

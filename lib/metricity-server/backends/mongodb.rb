@@ -39,6 +39,10 @@ module Metricity
           results
         end
 
+        def remove_all(type)
+          @coll.remove('type' => type)
+        end
+
         private
 
         def convert_series(data, range)

@@ -17,6 +17,10 @@ module Metricity
         @backend.retrieve(type, time_from, time_to, range)
       end
 
+      def remove_all(type)
+        @backend.remove_all(type)
+      end
+
       private
 
       def rationalize_time_to_utc(object)

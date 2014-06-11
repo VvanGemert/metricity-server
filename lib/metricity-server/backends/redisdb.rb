@@ -5,19 +5,18 @@ module Metricity
     module Backends
       # Redis
       class Redisdb
-        
         def initialize
           setup_connection
         end
-        
+
         def setup_connection
           Log.message('Connecting to Redis..')
-          @client = Redis.new(:host => "127.0.0.1", :port => 6380, :db => 5)
+          @client = Redis.new(host: '127.0.0.1', port: 6380, db: 5)
         end
-        
+
         def insert(object)
           @client.zadd(key, timestamp, value)
-          
+
           object['time']
           item = @coll.find_one(type: 'memory_usage', timestamp_hourly: time)
 

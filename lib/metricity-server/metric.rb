@@ -1,11 +1,16 @@
 require 'metricity-server/backends/mongodb'
+require 'metricity-server/backends/redisdb'
 
 module Metricity
   module Server
     # Receiver
     class Metric
-      def initialize
-        @backend = Metricity::Server::Backends::Mongodb.new
+      def initialize(options = {})
+        if options[:backend] && options[:backend] == 'redis'
+          @backend = Metricity::Server::Backends::Redisdb.new
+        else
+          @backend = Metricity::Server::Backends::Mongodb.new
+        end
       end
 
       def insert(object)

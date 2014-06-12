@@ -11,9 +11,16 @@ class MetricityBackendMongodbTest < Minitest::Test
   end
 
   def test_insert
-    timestamp = Time.now.utc
     assert true, @metric.insert(
-      'time' => timestamp.to_s,
+      'time' => Time.now.utc.to_s,
+      'type' => 'test_type',
+      'objects' => { 'rails' => 50, 'delayed_job' => 100 }
+    )
+  end
+
+  def test_retrieve
+    assert true, @metric.insert(
+      'time' => Time.now.utc.to_s,
       'type' => 'test_type',
       'objects' => { 'rails' => 50, 'delayed_job' => 100 }
     )

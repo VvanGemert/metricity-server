@@ -1,0 +1,8 @@
+metricity:
+  backend:
+    type: 'MongoDB'
+    host: '127.0.0.1'
+    port: 27017
+  logging: 'debug'
+  port_receiver: 9888
+  port_dashboard: 4567

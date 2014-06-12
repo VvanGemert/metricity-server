@@ -26,9 +26,14 @@ module Metricity
         end
         
         def retrieve(type, time_from, time_to, range = 'minutes')
-          key = 'test_type_rails'
-          result = @client.zrangebyscore(key, time_from.to_i, time_to.to_i, {withscores: true})
-          p result
+          keys = @client.keys(type + '*')
+          results = []
+          keys.each do |key|
+            data = @client.zrangebyscore(key, time_from.to_i, time_to.to_i, {withscores: true})
+            data.map! { |val,time| [time.to_i.to_s + '000', val.to_i] }
+            results.push({ name: key.sub!(type + '_', ''), data: data })
+          end
+          results
         end
       end
     end

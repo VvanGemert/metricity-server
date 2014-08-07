@@ -67,8 +67,11 @@ module Metricity
         Thin::Logging.silent = true
         Thin::Server.new('0.0.0.0', 4567) do
           EM.next_tick do
-            EM.open_datagram_socket('127.0.0.1', 9888,
-                                    Metricity::Server::Receiver)
+            # UDP Server
+            # EM.open_datagram_socket('127.0.0.1', 9888,
+            #                         Metricity::Server::Receiver)
+            # TCP Server
+            EM.start_server '0.0.0.0', 9888, Metricity::Server::Receiver
           end
           map '/' do
             run Metricity::Server::Webserver

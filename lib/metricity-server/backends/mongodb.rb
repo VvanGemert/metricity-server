@@ -8,7 +8,8 @@ module Metricity
       class Mongodb
         include Mongo
 
-        def initialize
+        def initialize(options)
+          @options = options
           setup_connection
           check_indexes
         end
@@ -115,7 +116,7 @@ module Metricity
         end
 
         def setup_connection
-          Log.message('Connecting to MongoDB..')
+          Log.message('Connecting to MongoDB..') if @options[:verbose]
           @client = MongoClient.new
           @db = @client['metricity']
           @coll = @db['metrics']

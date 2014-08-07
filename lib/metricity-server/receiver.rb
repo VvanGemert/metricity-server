@@ -13,7 +13,13 @@ module Metricity
 
       def receive_data(json)
         data = JSON.parse(json)
-        @metric.insert(data)
+        data['host'] = retrieve_sender_ip
+        p data
+        # @metric.insert(host, data)
+      end
+
+      def retrieve_sender_ip
+        Socket.unpack_sockaddr_in(get_peername)[1]
       end
     end
   end

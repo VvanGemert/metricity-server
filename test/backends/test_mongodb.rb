@@ -6,7 +6,7 @@ require 'helper'
 # MetricityBackendMongodbTest
 class MetricityBackendMongodbTest < Minitest::Test
   def setup
-    @metric = Metricity::Server::Metric.new
+    @metric = Metricity::Server::Metric.new(backend: 'Mongo', verbose: false)
     @metric.remove_all('test_type')
   end
 

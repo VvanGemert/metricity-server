@@ -7,9 +7,9 @@ module Metricity
     class Metric
       def initialize(options = {})
         if options[:backend] && options[:backend] == 'redis'
-          @backend = Metricity::Server::Backends::Redisdb.new
+          @backend = Metricity::Server::Backends::Redisdb.new(options)
         else
-          @backend = Metricity::Server::Backends::Mongodb.new
+          @backend = Metricity::Server::Backends::Mongodb.new(options)
         end
       end
 

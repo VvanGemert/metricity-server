@@ -14,8 +14,7 @@ module Metricity
       def receive_data(json)
         data = JSON.parse(json)
         data['host'] = retrieve_sender_ip
-        p data
-        # @metric.insert(host, data)
+        @metric.insert(data)
       end
 
       def retrieve_sender_ip

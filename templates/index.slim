@@ -16,6 +16,7 @@ javascript:
         
         Highcharts.setOptions({
           global: {
+            useUTC: true,
             timezoneOffset: timeZoneOffset
           }
         });
@@ -33,8 +34,7 @@ javascript:
     		    },
     		
     		    xAxis: {
-    		        type: 'datetime',
-    		        minRange: 1 * 24 * 360000
+    		        type: 'datetime'
     		    },
     		    
     		    yAxis: {
@@ -52,8 +52,9 @@ javascript:
                     }
                 }
             },
-
-    		    
+            tooltip: {
+                xDateFormat: '%Y-%m-%d %H:%I:%S',
+            },
     		    legend: {
     		        enabled: true
     		    },

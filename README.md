@@ -1,6 +1,9 @@
 # Metricity::Server
 
-TODO: Write a gem description
+TODO:
+
+- Add aggregation support (LTRIM, LSPLICE)
+- Show all host metrics on dashboard
 
 ## Installation
 

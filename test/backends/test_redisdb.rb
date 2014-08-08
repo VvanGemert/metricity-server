@@ -7,7 +7,6 @@ require 'helper'
 class MetricityBackendRedisDbTest < Minitest::Test
   def setup
     @metric = Metricity::Server::Metric.new(backend: 'redis', verbose: false)
-    @metric.remove_all('test_type')
   end
 
   def test_insert
@@ -22,7 +21,7 @@ class MetricityBackendRedisDbTest < Minitest::Test
   end
 
   def test_retrieve
-    result = @metric.retrieve('test.host#memory',
+    result = @metric.retrieve('test.host#metrics#memory',
                               Time.new(Time.now.year - 1).utc,
                               Time.new(Time.now.year + 1).utc)
     result.each do |obj|

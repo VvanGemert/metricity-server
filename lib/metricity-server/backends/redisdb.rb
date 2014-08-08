@@ -20,22 +20,20 @@ module Metricity
         end
 
         def insert(metrics)
-          @client.pipelined do
-            metrics['metrics'].each do |name, objects|
-              objects.each do |obj, val|
-                key = [metrics['host'], name, obj].join(DELIMITER)
-                @client.zadd(key, metrics['time'].to_i, val)
-              end
+          metrics['metrics'].each do |name, objects|
+            objects.each do |obj, val|
+              key = [metrics['host'], 'metrics', name, obj].join(DELIMITER)
+              @client.zadd(key, metrics['time'].to_i, val)
             end
           end
         end
 
-        def retrieve(type, time_from, time_to, range = 'minutes')
+        def retrieve(type, time_from, time_to, range)
           keys = @client.keys(type + '*')
           results = []
           keys.each do |key|
             data = @client.zrangebyscore(key, time_from.to_i, time_to.to_i, withscores: true)
-            data.map! { |val, time| [time.to_i.to_s + '000', val.to_i] }
+            data.map! { |val, time| [time.to_i * 1000, val.to_i] }
             results.push(name: key.sub!(type + DELIMITER, ''), data: data)
           end
           results

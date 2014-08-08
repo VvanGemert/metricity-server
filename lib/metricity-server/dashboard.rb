@@ -40,15 +40,15 @@ module Metricity
       get '/data2.json' do
         metric = Metric.new
         content_type :json
-        metric.retrieve('memory_usage',
+        metric.retrieve('127.0.0.1#metrics#memory',
                         Time.new(Time.now.year, Time.now.month - 1),
-                        Time.now, 'hours').to_json
+                        Time.now, 'seconds').to_json
       end
 
       get '/data.json' do
         metric = Metric.new
         content_type :json
-        metric.retrieve('cpu_usage',
+        metric.retrieve('127.0.0.1#metrics#cpu',
                         Time.new(Time.now.year, Time.now.month, Time.now.day),
                         Time.now, 'seconds').to_json
       end
